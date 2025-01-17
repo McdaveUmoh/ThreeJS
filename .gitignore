@@ -3,6 +3,8 @@ node_modules/
 # README.md
 # *.md
 16-haunted-house/
+threejs_resources/
+
 
 # dependencies
 /node_modules
@@ -10,10 +12,16 @@ node_modules/
 /dist
 
 */node_modules
+**/.DS_Store
+**/*.DS_Store
+*/.DS_Store
+*/*.DS_Store
+
 */package-lock.json
 
 ~/node_modules
 ~/package-lock.json
 ~/dist
 
+*.DS_Store
 .DS_Store
