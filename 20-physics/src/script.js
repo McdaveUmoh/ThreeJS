@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
-import CANNON  from 'cannon'
+import * as CANNON  from 'cannon-es'
 
 /**
  * Debug
@@ -32,8 +32,21 @@ debugObject.createBox = () => {
         }
     )
 }
+
+debugObject.reset = () => {
+    
+    for (const object of objectsToUpdate){
+        //Remove body
+        object.body.removeEventListener('collide', playBallHitSound)
+        object.body.removeEventListener('collide', playBoxHitSound)
+
+        //Remove mesh
+        scene.remove(object.mesh)
+    }
+}
 gui.add(debugObject, 'createSphere')
 gui.add(debugObject, 'createBox')
+gui.add(debugObject, 'reset')
 
 /**
  * Base
@@ -43,6 +56,40 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+
+/**
+ * Sound
+ */
+const boxHitSound = new Audio("sounds/hit.mp3")
+const ballHitSound = new Audio("sounds/ballHit.wav")
+
+const playBallHitSound = (collision) =>
+{
+    //document.getElementByID('lil-gui-name-1').onclick 
+    //console.log(createBox.addEventListener("click",function hi(){"hello"}))
+    const impactStrength = collision.contact.getImpactVelocityAlongNormal()
+    //console.log(impactStrength)
+    if(impactStrength > 0.5)
+    {
+        ballHitSound.volume = Math.random()
+        ballHitSound.currentTime = 0
+        ballHitSound.play()
+    }
+}
+
+const playBoxHitSound = (collision) =>
+    {
+        //document.getElementByID('lil-gui-name-1').onclick 
+        //console.log(createBox.addEventListener("click",function hi(){"hello"}))
+        const impactStrength = collision.contact.getImpactVelocityAlongNormal()
+        //console.log(impactStrength)
+        if(impactStrength > 1.5)
+        {
+            boxHitSound.volume = Math.random()
+            boxHitSound.currentTime = 0
+            boxHitSound.play()
+        }
+    }
 
 /**
  * Textures
@@ -232,6 +279,7 @@ const createSphere = (radius, position) =>{
         material: defaultMaterial
     })
     body.position.copy(position)
+    body.addEventListener('collide',playBallHitSound)
     world.addBody(body)
 
     //Update Objects
@@ -270,6 +318,7 @@ const createBox = (width, height, depth, position) =>{
         material: defaultMaterial
     })
     body.position.copy(position)
+    body.addEventListener('collide',playBoxHitSound)
     world.addBody(body)
 
     //Update Objects
