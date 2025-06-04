@@ -4,6 +4,7 @@ node_modules/
 # *.md
 16-haunted-house/
 threejs_resources/
+/threejs_resources
 
 
 # dependencies

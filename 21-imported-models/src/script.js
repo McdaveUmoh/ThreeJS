@@ -81,7 +81,7 @@ directionalLight.position.set(5, 5, 5)
 scene.add(directionalLight)
 
 /**
- * Sizes
+ * SizesTH$&864hu?
  */
 const sizes = {
     width: window.innerWidth,
