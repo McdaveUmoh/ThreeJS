@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
+
 
 /**
  * Base
@@ -27,6 +29,7 @@ const object2 = new THREE.Mesh(
     new THREE.SphereGeometry(0.5, 16, 16),
     new THREE.MeshBasicMaterial({ color: '#ff0000' })
 )
+object2.position.x = 1.5
 
 const object3 = new THREE.Mesh(
     new THREE.SphereGeometry(0.5, 16, 16),
@@ -89,6 +92,20 @@ window.addEventListener('mousemove', (event) => {
     mouse.y = -(event.clientY / sizes.height * 2 - 1)
 })
 
+window.addEventListener('click', () => {
+    if(currentIntersect){
+        if(currentIntersect.object === object1){
+            console.log('just clicked on object1')
+        }
+        if(currentIntersect.object === object2){
+            console.log('just clicked on object2')
+        }
+        if(currentIntersect.object === object3){
+            console.log('just clicked on object3')
+        }
+    }
+})
+
 /**
  * Camera
  */
@@ -111,6 +128,34 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 let currentIntersect = null
+
+/**
+ * Model
+ */
+const gltfLoader = new GLTFLoader()
+
+let model = null
+
+gltfLoader.load(
+    './models/Duck/glTF-Binary/Duck.glb',
+    (gltf) => {
+        model = gltf.scene
+        model.position.y = -1.2
+        scene.add(model)
+    }
+)
+
+/**
+ * Lights
+ */
+//Ambient Light
+const ambientLight = new THREE.AmbientLight('#ffffff', 0.3)
+scene.add(ambientLight)
+
+//Directional light
+const directionalLight =  new THREE.DirectionalLight('#ffffff',0.7)
+directionalLight.position.set(1,2,3)
+scene.add(directionalLight)
 
 /**
  * Animate
@@ -158,6 +203,16 @@ const tick = () =>
 
     // console.log(intersections.length)
 
+    // Test intersect with model
+    if(model){
+        const modelIntersect = raycaster.intersectObject(model)
+
+        if(modelIntersect.length){
+            model.scale.set(1.3, 1.3, 1.3)
+        } else {
+            model.scale.set(1,1,1)
+        }
+    }
 
     // Update controls
     controls.update()
