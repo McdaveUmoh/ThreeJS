@@ -2,14 +2,18 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js'
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
+import { GroundedSkybox } from 'three/addons/objects/GroundedSkybox.js'
 
 /**
- * Loaders
+ * Loaders SO/PQE/A25/R/00053
  */
 const gltfLoader = new GLTFLoader()
 const cubeTextureLoader = new THREE.CubeTextureLoader()
 const rgbeLoader = new RGBELoader()
+const exrLoader = new EXRLoader()
+const textureLoader = new THREE.TextureLoader()
 
 /**
  * Base
@@ -26,10 +30,10 @@ const scene = new THREE.Scene()
 /**
  * Environment map
 */
-scene.environmentIntensity = 3
+scene.environmentIntensity = 1
 scene.backgroundBlurriness = 0
 scene.backgroundIntensity = 1
-// scene.backgroundRotation.x = 1
+// scene.backgroundRotation.x = 1    19910104277
 // scene.environmentRotation.x = 1
 
 guui.add(scene, 'environmentIntensity').min(0).max(10).step(0.001)
@@ -47,22 +51,62 @@ guui.add(scene.environmentRotation, 'y').min(0).max(Math.PI * 2).step(0.001).nam
 //     '/environmentMaps/0/ny.png',
 //     '/environmentMaps/0/pz.png',
 //     '/environmentMaps/0/nz.png',
-// ])
+// ]) 
 
 // scene.environment = environmentMap
 // scene.background = environmentMap
 
-//HDR equirectangular
-rgbeLoader.load('/environmentMaps/blender-2k.hdr', (environmentMap) => 
+//HDR (RGBE) equirectangular nvidiaCanvas-4k.exr exrLoader
+// rgbeLoader.load('/environmentMaps/blender-2k.hdr', (environmentMap) => 
+// {
+
+//     environmentMap.mapping = THREE.EquirectangularReflectionMapping
+
+//     // scene.background = environmentMap
+//     scene.environment = environmentMap
+// }
+
+// )  
+
+
+//HDR (EXR) equirectangular
+// exrLoader.load('/environmentMaps/nvidiaCanvas-4k.exr', (environmentMap) => 
+// {
+
+//     environmentMap.mapping = THREE.EquirectangularReflectionMapping
+
+//     scene.background = environmentMap
+//     scene.environment = environmentMap
+// }
+
+// )  
+
+// LDR equirectangular
+// const environmentMap = textureLoader.load('/environmentMaps/blockadesLabsSkybox/anime_art_style_japan_streets_with_cherry_blossom_.jpg')
+// environmentMap.mapping = THREE.EquirectangularReflectionMapping
+// environmentMap.colorSpace = THREE.SRGBColorSpace
+
+// scene.background = environmentMap
+// scene.environment = environmentMap
+
+// Ground projected skybox
+rgbeLoader.load('/environmentMaps/2/2k.hdr', (environmentMap) => 
 {
 
     environmentMap.mapping = THREE.EquirectangularReflectionMapping
 
-    scene.background = environmentMap
+    // scene.background = environmentMap
     scene.environment = environmentMap
+
+    //skybox
+    const skybox = new GroundedSkybox(environmentMap, 15,70)
+    // skybox.material.wireframe = true
+    skybox.position.y = 15
+    scene.add(skybox)
 }
 
 )  
+
 
 /**
  * Torus Knot
