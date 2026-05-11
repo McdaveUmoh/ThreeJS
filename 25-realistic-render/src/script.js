@@ -3,7 +3,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
-import { toneMapping, toneMappingExposure } from 'three/tsl'
 
 /**
  * Loaders
@@ -30,9 +29,11 @@ const updateAllMaterials = () =>
 {
     scene.traverse((child) =>
     {
-        if(child.isMesh)
+        if(child.isMesh && child.material.isMeshStandardMaterial)
         {
             // Activate shadow here
+            child.castShadow = true 
+            child.receiveShadow = true 
         }
     })
 }
@@ -61,7 +62,7 @@ rgbeLoader.load('/environmentMaps/0/2k.hdr', (environmentMap) =>
  * Directional Light
  */
 const directionalLight = new THREE.DirectionalLight('#ffffff', 2)
-directionalLight.position.set(3, 7, 6)
+directionalLight.position.set(-4, 6.5, 2.5)
 scene.add(directionalLight)
 
 gui.add(directionalLight, 'intensity', 0, 10).step(0.001).name('lightIntensity')
