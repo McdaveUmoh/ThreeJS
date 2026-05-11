@@ -32,8 +32,8 @@ const updateAllMaterials = () =>
         if(child.isMesh && child.material.isMeshStandardMaterial)
         {
             // Activate shadow here
-            child.castShadow = true 
-            child.receiveShadow = true 
+            child.castShadow = true
+            child.receiveShadow = true
         }
     })
 }
@@ -66,9 +66,25 @@ directionalLight.position.set(-4, 6.5, 2.5)
 scene.add(directionalLight)
 
 gui.add(directionalLight, 'intensity', 0, 10).step(0.001).name('lightIntensity')
-gui.add(directionalLight.position, 'x', -10,10).step(0.001).name('lightX')
-gui.add(directionalLight.position, 'y', -10,10).step(0.001).name('lightY')
-gui.add(directionalLight.position, 'z', -10,10).step(0.001).name('lightZ')
+gui.add(directionalLight.position, 'x', -10, 10).step(0.001).name('lightX')
+gui.add(directionalLight.position, 'y', -10, 10).step(0.001).name('lightY')
+gui.add(directionalLight.position, 'z', -10, 10).step(0.001).name('lightZ')
+
+// Shadows
+directionalLight.castShadow = true
+directionalLight.shadow.camera.far = 15
+directionalLight.shadow.mapSize.set(512, 512) //the higher the better for qulity but perfomance wise not so
+gui.add(directionalLight, 'castShadow')
+
+// Helper
+// const directionalLightHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
+// scene.add(directionalLightHelper)
+
+//Target
+directionalLight.target.position.set(0, 4, 0)
+// scene.add(directionalLight.target)
+directionalLight.target.updateWorldMatrix()
+
 
 /**
  * Models
@@ -130,6 +146,7 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.shadowMap.enabled = true
 
 // Tone Mapping
 renderer.toneMapping =  THREE.ReinhardToneMapping
