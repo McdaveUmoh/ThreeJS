@@ -9,6 +9,7 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
  */
 const gltfLoader = new GLTFLoader()
 const rgbeLoader = new RGBELoader()
+const textureLoader =  new THREE.TextureLoader()
 
 /**
  * Base
@@ -73,8 +74,13 @@ gui.add(directionalLight.position, 'z', -10, 10).step(0.001).name('lightZ')
 // Shadows
 directionalLight.castShadow = true
 directionalLight.shadow.camera.far = 15
-directionalLight.shadow.mapSize.set(512, 512) //the higher the better for qulity but perfomance wise not so
+directionalLight.shadow.normalBias = 0.027
+directionalLight.shadow.bias = -0.004
+directionalLight.shadow.mapSize.set(512, 512) //the higher the better for quality but perfomance wise not so
+
 gui.add(directionalLight, 'castShadow')
+gui.add(directionalLight.shadow, 'normalBias').min(-0.05).max(0.05).step(0.001)
+gui.add(directionalLight.shadow, 'bias').min(-0.05).max(0.05).step(0.001)
 
 // Helper
 // const directionalLightHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
@@ -89,17 +95,86 @@ directionalLight.target.updateWorldMatrix()
 /**
  * Models
  */
-// Helmet
+// // Helmet
+// gltfLoader.load(
+//     '/models/FlightHelmet/glTF/FlightHelmet.gltf',
+//     (gltf) =>
+//     {
+//         gltf.scene.scale.set(10, 10, 10)
+//         scene.add(gltf.scene)
+
+//         updateAllMaterials()
+//     }
+// )
+
+// Burger
 gltfLoader.load(
-    '/models/FlightHelmet/glTF/FlightHelmet.gltf',
+    '/models/hamburger.glb',
     (gltf) =>
     {
-        gltf.scene.scale.set(10, 10, 10)
+        gltf.scene.scale.set(0.4, 0.4, 0.4)
+        gltf.scene.position.set(0, 2.5, 0)
         scene.add(gltf.scene)
 
         updateAllMaterials()
     }
 )
+
+/**
+ * Floor
+ */
+
+const floorColorTexture = textureLoader.load('/textures/wood_cabinet_worn_long/wood_cabinet_worn_long_diff_1k.jpg')
+const floorNormalTexture = textureLoader.load('/textures/wood_cabinet_worn_long/wood_cabinet_worn_long_nor_gl_1k.jpg')
+const floorARMTexture = textureLoader.load('/textures/wood_cabinet_worn_long/wood_cabinet_worn_long_arm_1k.jpg')
+
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(8,8),
+    new THREE.MeshStandardMaterial({
+        map: floorColorTexture,
+        normalMap: floorNormalTexture,
+        aoMap: floorARMTexture,
+        roughnessMap: floorARMTexture,
+        metalnessMap: floorARMTexture
+    })
+)
+
+//Adding Color space to the normal textures
+floorColorTexture.colorSpace = THREE.SRGBColorSpace
+
+floor.rotation.x = - Math.PI * 0.5
+scene.add(floor)
+
+/**
+ * Wall
+ */
+
+const wallColorTexture = textureLoader.load('/textures/castle_brick_broken_06/castle_brick_broken_06_diff_1k.jpg')
+const wallNormalTexture = textureLoader.load('/textures/castle_brick_broken_06/castle_brick_broken_06_nor_gl_1k.jpg')
+const wallARMTexture = textureLoader.load('/textures/castle_brick_broken_06/castle_brick_broken_06_arm_1k.jpg')
+
+const wall = new THREE.Mesh(
+    new THREE.PlaneGeometry(8,8),
+    new THREE.MeshStandardMaterial({
+        map: wallColorTexture,
+        normalMap: wallNormalTexture,
+        aoMap: wallARMTexture,
+        roughnessMap: wallARMTexture,
+        metalnessMap: wallARMTexture
+    })
+)
+
+//Adding Color space to the normal textures
+wallNormalTexture.colorSpace = THREE.SRGBColorSpace
+
+wall.position.y = 4
+wall.position.z = -4
+scene.add(wall)
+
+
+
+
+
 
 /**
  * Sizes
